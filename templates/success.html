@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Success</title>
+  <script>
+    fetch('/get_user')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('user-info').textContent = data.email
+          ? `Logged in as: ${data.email}`
+          : 'No user info found.';
+      });
+
+    function handleLogout() {
+      window.location.href = '/';
+    }
+  </script>
+</head>
+<body>
+  <h1>You have successfully logged in!</h1>
+  <p id="user-info">Loading...</p>
+  <button onclick="handleLogout()">Logout</button>
+</body>
+</html>

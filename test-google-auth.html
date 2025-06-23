@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Auth Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <h1>Google Auth Test</h1>
+    <div id="buttonDiv"></div>
+    <div id="result"></div>
+
+    <script>
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "237672950587-0fjv71akur45kfao2gf7anggc0ft1fit.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("buttonDiv"),
+                { theme: "outline", size: "large" }
+            );
+        }
+
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            
+            // Test the API call
+            fetch('https://web-production-6c1b1.up.railway.app/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token: response.credential
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                document.getElementById('result').innerHTML = '<pre>Error: ' + error.toString() + '</pre>';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html> 

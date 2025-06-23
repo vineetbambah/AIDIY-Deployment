@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Auth Debug</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .info { background: #e3f2fd; color: #1565c0; }
+        .warning { background: #fff3e0; color: #f57c00; }
+        .config { background: #f3e5f5; color: #7b1fa2; border: 2px solid #9c27b0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Google Auth Debug Tool</h1>
+    
+    <div>
+        <h3>🔧 Current Configuration</h3>
+        <div id="configInfo" class="log config">
+            <strong>Google Client ID:</strong> 1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com<br>
+            <strong>Current Origin:</strong> <span id="currentOrigin"></span><br>
+            <strong>Expected Origins in Google Console:</strong><br>
+            • https://aidiy.ca<br>
+            • https://www.aidiy.ca<br>
+            • http://localhost:3000<br>
+            • <strong style="color: red;">http://localhost:8080</strong> ← THIS ONE IS CRITICAL<br>
+            • http://localhost:5500<br>
+            • http://localhost:9000<br>
+            • http://127.0.0.1:8080
+        </div>
+    </div>
+
+    <div>
+        <h3>Step 1: Environment Check</h3>
+        <button onclick="checkEnvironment()">Check Environment</button>
+        <div id="envResult"></div>
+    </div>
+
+    <div>
+        <h3>Step 2: Google Sign In</h3>
+        <div id="buttonDiv"></div>
+        <div id="tokenResult"></div>
+    </div>
+
+    <div>
+        <h3>Step 3: API Test Results</h3>
+        <div id="apiResult"></div>
+    </div>
+
+    <div>
+        <h3>Debug Logs</h3>
+        <div id="logs"></div>
+    </div>
+
+    <script>
+        // Set current origin immediately
+        document.getElementById('currentOrigin').textContent = window.location.origin;
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            console.log(message);
+        }
+
+        function checkEnvironment() {
+            log('🔍 Checking environment...', 'info');
+            log(`Current URL: ${window.location.href}`, 'info');
+            log(`Current Origin: ${window.location.origin}`, 'info');
+            log(`User Agent: ${navigator.userAgent}`, 'info');
+            log(`Google API loaded: ${typeof google !== 'undefined'}`, 'info');
+            
+            document.getElementById('envResult').innerHTML = `
+                <div class="log info">
+                    <strong>Environment Info:</strong><br>
+                    URL: ${window.location.href}<br>
+                    Origin: ${window.location.origin}<br>
+                    Google API: ${typeof google !== 'undefined' ? '✅ Loaded' : '❌ Not loaded'}<br>
+                    Target API: https://web-production-6c1b1.up.railway.app
+                </div>
+            `;
+        }
+
+        window.onload = function () {
+            log('🚀 Page loaded, initializing Google Auth...', 'info');
+            
+            const initGoogle = () => {
+                if (typeof google !== 'undefined' && google.accounts) {
+                    try {
+                        log('✅ Google API available, initializing...', 'success');
+                        log('🔑 Using Client ID: 1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com', 'info');
+                        log(`🌐 Current Origin: ${window.location.origin}`, 'info');
+                        
+                        google.accounts.id.initialize({
+                            client_id: "1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com",
+                            callback: handleCredentialResponse,
+                            auto_select: false,
+                            cancel_on_tap_outside: false
+                        });
+                        
+                        google.accounts.id.renderButton(
+                            document.getElementById("buttonDiv"),
+                            { 
+                                theme: "outline", 
+                                size: "large",
+                                width: 300
+                            }
+                        );
+                        log('✅ Google button rendered successfully', 'success');
+                    } catch (error) {
+                        log(`❌ Error initializing Google: ${error.message}`, 'error');
+                        log(`❌ Error stack: ${error.stack}`, 'error');
+                    }
+                } else {
+                    log('⏳ Google API not ready, retrying in 1 second...', 'info');
+                    setTimeout(initGoogle, 1000);
+                }
+            };
+            
+            initGoogle();
+            checkEnvironment();
+        }
+
+        function handleCredentialResponse(response) {
+            log('🎯 Google credential callback triggered!', 'success');
+            
+            if (response.error) {
+                log(`❌ Google Auth Error: ${response.error}`, 'error');
+                log(`❌ Error Details: ${JSON.stringify(response)}`, 'error');
+                
+                if (response.error === 'popup_blocked_by_browser') {
+                    log('⚠️ Popup blocked - try allowing popups for this site', 'warning');
+                } else if (response.error.includes('origin')) {
+                    log('🚨 ORIGIN MISMATCH - Check Google Console configuration!', 'error');
+                    log('📋 Make sure http://localhost:8080 is in "Authorized JavaScript origins"', 'warning');
+                }
+                
+                document.getElementById('tokenResult').innerHTML = `
+                    <div class="log error">
+                        <strong>❌ Google Auth Failed:</strong><br>
+                        Error: ${response.error}<br>
+                        <strong>Action Required:</strong> Check Google Cloud Console configuration
+                    </div>
+                `;
+                return;
+            }
+            
+            if (!response.credential) {
+                log('❌ No credential received from Google', 'error');
+                return;
+            }
+            
+            log(`🎯 Google credential received! Length: ${response.credential.length}`, 'success');
+            
+            // Decode token to show user info
+            try {
+                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                log(`User: ${payload.email} (${payload.name})`, 'info');
+                
+                document.getElementById('tokenResult').innerHTML = `
+                    <div class="log success">
+                        <strong>✅ Google Token Received:</strong><br>
+                        Email: ${payload.email}<br>
+                        Name: ${payload.name}<br>
+                        Token length: ${response.credential.length} chars<br>
+                        Issued at: ${new Date(payload.iat * 1000).toLocaleString()}
+                    </div>
+                `;
+                
+                // Test API call
+                testApiCall(response.credential);
+                
+            } catch (e) {
+                log(`❌ Error decoding token: ${e.message}`, 'error');
+            }
+        }
+
+        function testApiCall(token) {
+            log('🔄 Testing API call to Railway backend...', 'info');
+            
+            const apiUrl = 'https://web-production-6c1b1.up.railway.app/auth/google';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Origin': window.location.origin
+                },
+                body: JSON.stringify({
+                    token: token
+                })
+            })
+            .then(response => {
+                log(`📡 API Response status: ${response.status}`, 'info');
+                log(`📡 API Response headers: ${JSON.stringify([...response.headers.entries()])}`, 'info');
+                return response.json();
+            })
+            .then(data => {
+                log(`✅ API Response received: ${JSON.stringify(data)}`, 'success');
+                
+                document.getElementById('apiResult').innerHTML = `
+                    <div class="log success">
+                        <strong>✅ API Call Successful:</strong><br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                log(`❌ API Error: ${error.message}`, 'error');
+                log(`❌ Error details: ${error.toString()}`, 'error');
+                
+                document.getElementById('apiResult').innerHTML = `
+                    <div class="log error">
+                        <strong>❌ API Call Failed:</strong><br>
+                        Error: ${error.message}<br>
+                        Details: ${error.toString()}
+                    </div>
+                `;
+            });
+        }
+
+        // Add error event listeners
+        window.addEventListener('error', function(e) {
+            log(`💥 JavaScript Error: ${e.message}`, 'error');
+            log(`💥 Error location: ${e.filename}:${e.lineno}:${e.colno}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`💥 Unhandled Promise Rejection: ${e.reason}`, 'error');
+        });
+    </script>
+</body>
+</html> 

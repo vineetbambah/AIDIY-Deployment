@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .log { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .info { background: #e3f2fd; color: #1565c0; }
+        .warning { background: #fff3e0; color: #f57c00; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f8f8; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Network Debug Tool</h1>
+    
+    <div class="test-section">
+        <h3>🌐 Basic Connectivity Tests</h3>
+        <button onclick="testBasicConnectivity()">Test Basic Connectivity</button>
+        <div id="connectivityResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔧 CORS & Headers Test</h3>
+        <button onclick="testCorsHeaders()">Test CORS Headers</button>
+        <div id="corsResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 Google Auth API Test</h3>
+        <button onclick="testGoogleAuthAPI()">Test Google Auth API</button>
+        <div id="authResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📡 Fetch vs XMLHttpRequest Test</h3>
+        <button onclick="testFetchVsXHR()">Test Different Request Methods</button>
+        <div id="requestResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔍 Network Environment</h3>
+        <button onclick="checkNetworkEnvironment()">Check Network Environment</button>
+        <div id="networkResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 Debug Logs</h3>
+        <div id="logs"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://web-production-6c1b1.up.railway.app';
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            console.log(message);
+        }
+
+        async function testBasicConnectivity() {
+            log('🔍 Testing basic connectivity...', 'info');
+            const result = document.getElementById('connectivityResult');
+            
+            const tests = [
+                { name: 'Railway Health Check', url: `${API_BASE}/api/health` },
+                { name: 'Railway Root', url: `${API_BASE}/` },
+                { name: 'Google APIs', url: 'https://accounts.google.com/gsi/client' }
+            ];
+
+            let html = '<h4>Connectivity Results:</h4>';
+            
+            for (const test of tests) {
+                try {
+                    log(`Testing ${test.name}...`, 'info');
+                    const startTime = Date.now();
+                    const response = await fetch(test.url, { 
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+                    
+                    html += `<div class="log success">✅ ${test.name}: ${response.status} (${duration}ms)</div>`;
+                    log(`✅ ${test.name}: ${response.status} (${duration}ms)`, 'success');
+                } catch (error) {
+                    html += `<div class="log error">❌ ${test.name}: ${error.message}</div>`;
+                    log(`❌ ${test.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            result.innerHTML = html;
+        }
+
+        async function testCorsHeaders() {
+            log('🔍 Testing CORS headers...', 'info');
+            const result = document.getElementById('corsResult');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                const headers = {};
+                for (const [key, value] of response.headers.entries()) {
+                    headers[key] = value;
+                }
+                
+                result.innerHTML = `
+                    <div class="log success">
+                        <strong>✅ CORS Headers Response:</strong>
+                        <pre>${JSON.stringify(headers, null, 2)}</pre>
+                    </div>
+                `;
+                log('✅ CORS headers retrieved successfully', 'success');
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="log error">
+                        <strong>❌ CORS Test Failed:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                log(`❌ CORS test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGoogleAuthAPI() {
+            log('🔍 Testing Google Auth API...', 'info');
+            const result = document.getElementById('authResult');
+            
+            const testToken = "test-token-12345";
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/google`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({
+                        token: testToken
+                    })
+                });
+                
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <div class="log ${response.ok ? 'success' : 'warning'}">
+                        <strong>📡 Google Auth API Response:</strong><br>
+                        Status: ${response.status}<br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+                log(`📡 Google Auth API: ${response.status} - ${JSON.stringify(data)}`, response.ok ? 'success' : 'warning');
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="log error">
+                        <strong>❌ Google Auth API Failed:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                log(`❌ Google Auth API failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFetchVsXHR() {
+            log('🔍 Testing Fetch vs XMLHttpRequest...', 'info');
+            const result = document.getElementById('requestResult');
+            
+            let html = '<h4>Request Method Comparison:</h4>';
+            
+            // Test with Fetch
+            try {
+                log('Testing with Fetch API...', 'info');
+                const fetchResponse = await fetch(`${API_BASE}/api/health`);
+                const fetchData = await fetchResponse.json();
+                html += `<div class="log success">✅ Fetch API: ${fetchResponse.status}</div>`;
+                log('✅ Fetch API successful', 'success');
+            } catch (error) {
+                html += `<div class="log error">❌ Fetch API: ${error.message}</div>`;
+                log(`❌ Fetch API failed: ${error.message}`, 'error');
+            }
+            
+            // Test with XMLHttpRequest
+            try {
+                log('Testing with XMLHttpRequest...', 'info');
+                const xhrPromise = new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', `${API_BASE}/api/health`);
+                    xhr.onload = () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(xhr);
+                        } else {
+                            reject(new Error(`HTTP ${xhr.status}`));
+                        }
+                    };
+                    xhr.onerror = () => reject(new Error('Network error'));
+                    xhr.send();
+                });
+                
+                const xhrResponse = await xhrPromise;
+                html += `<div class="log success">✅ XMLHttpRequest: ${xhrResponse.status}</div>`;
+                log('✅ XMLHttpRequest successful', 'success');
+            } catch (error) {
+                html += `<div class="log error">❌ XMLHttpRequest: ${error.message}</div>`;
+                log(`❌ XMLHttpRequest failed: ${error.message}`, 'error');
+            }
+            
+            result.innerHTML = html;
+        }
+
+        function checkNetworkEnvironment() {
+            log('🔍 Checking network environment...', 'info');
+            const result = document.getElementById('networkResult');
+            
+            const info = {
+                'Current URL': window.location.href,
+                'Origin': window.location.origin,
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'User Agent': navigator.userAgent,
+                'Online Status': navigator.onLine,
+                'Connection Type': navigator.connection ? navigator.connection.effectiveType : 'Unknown',
+                'Referrer': document.referrer || 'None',
+                'Cookies Enabled': navigator.cookieEnabled,
+                'Language': navigator.language,
+                'Platform': navigator.platform
+            };
+            
+            let html = '<h4>Network Environment:</h4>';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<div class="log info"><strong>${key}:</strong> ${value}</div>`;
+            }
+            
+            result.innerHTML = html;
+            log('✅ Network environment checked', 'success');
+        }
+
+        // Add error event listeners
+        window.addEventListener('error', function(e) {
+            log(`💥 JavaScript Error: ${e.message}`, 'error');
+            log(`💥 Error location: ${e.filename}:${e.lineno}:${e.colno}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`💥 Unhandled Promise Rejection: ${e.reason}`, 'error');
+        });
+
+        // Auto-run basic tests on load
+        window.onload = function() {
+            log('🚀 Network Debug Tool loaded', 'info');
+            checkNetworkEnvironment();
+        };
+    </script>
+</body>
+</html> 

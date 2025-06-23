@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vercel Backend Debug</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .info { background: #e3f2fd; color: #1565c0; }
+        .warning { background: #fff3e0; color: #f57c00; }
+        .config { background: #f3e5f5; color: #7b1fa2; border: 2px solid #9c27b0; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Vercel Backend Debug Tool</h1>
+    
+    <div>
+        <h3>🔧 Current Configuration</h3>
+        <div class="log config">
+            <strong>Target Backend:</strong> https://aidiy-dev.vercel.app<br>
+            <strong>Google Client ID:</strong> 1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com<br>
+            <strong>Current Origin:</strong> <span id="currentOrigin"></span>
+        </div>
+    </div>
+
+    <div>
+        <h3>Step 1: Test Backend Connectivity</h3>
+        <button onclick="testBackendConnectivity()">Test Backend</button>
+        <div id="backendResult"></div>
+    </div>
+
+    <div>
+        <h3>Step 2: Test Google Auth API</h3>
+        <button onclick="testGoogleAuthAPI()">Test Google Auth Endpoint</button>
+        <div id="authResult"></div>
+    </div>
+
+    <div>
+        <h3>Step 3: Full Google Login Test</h3>
+        <div id="buttonDiv"></div>
+        <div id="tokenResult"></div>
+    </div>
+
+    <div>
+        <h3>Debug Logs</h3>
+        <div id="logs"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://aidiy-dev.vercel.app';
+        
+        // Set current origin immediately
+        document.getElementById('currentOrigin').textContent = window.location.origin;
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            console.log(message);
+        }
+
+        async function testBackendConnectivity() {
+            log('🔍 Testing Vercel backend connectivity...', 'info');
+            const result = document.getElementById('backendResult');
+            
+            const tests = [
+                { name: 'Root Endpoint', url: `${API_BASE}/` },
+                { name: 'Health Check', url: `${API_BASE}/api/health` }
+            ];
+
+            let html = '<h4>Backend Connectivity Results:</h4>';
+            
+            for (const test of tests) {
+                try {
+                    log(`Testing ${test.name}...`, 'info');
+                    const startTime = Date.now();
+                    const response = await fetch(test.url, { 
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+                    const data = await response.json();
+                    
+                    html += `<div class="log success">✅ ${test.name}: ${response.status} (${duration}ms)<br>Response: ${JSON.stringify(data)}</div>`;
+                    log(`✅ ${test.name}: ${response.status} (${duration}ms)`, 'success');
+                } catch (error) {
+                    html += `<div class="log error">❌ ${test.name}: ${error.message}</div>`;
+                    log(`❌ ${test.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            result.innerHTML = html;
+        }
+
+        async function testGoogleAuthAPI() {
+            log('🔍 Testing Google Auth API endpoint...', 'info');
+            const result = document.getElementById('authResult');
+            
+            const testToken = "test-token-12345";
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/google`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({
+                        token: testToken
+                    })
+                });
+                
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <div class="log ${response.ok ? 'success' : 'warning'}">
+                        <strong>📡 Google Auth API Response:</strong><br>
+                        Status: ${response.status}<br>
+                        Response: <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+                log(`📡 Google Auth API: ${response.status} - ${JSON.stringify(data)}`, response.ok ? 'success' : 'warning');
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="log error">
+                        <strong>❌ Google Auth API Failed:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                log(`❌ Google Auth API failed: ${error.message}`, 'error');
+            }
+        }
+
+        window.onload = function () {
+            log('🚀 Vercel Debug Tool loaded', 'info');
+            
+            const initGoogle = () => {
+                if (typeof google !== 'undefined' && google.accounts) {
+                    try {
+                        log('✅ Google API available, initializing...', 'success');
+                        
+                        google.accounts.id.initialize({
+                            client_id: "1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com",
+                            callback: handleCredentialResponse,
+                            auto_select: false,
+                            cancel_on_tap_outside: false
+                        });
+                        
+                        google.accounts.id.renderButton(
+                            document.getElementById("buttonDiv"),
+                            { 
+                                theme: "outline", 
+                                size: "large",
+                                width: 300
+                            }
+                        );
+                        log('✅ Google button rendered successfully', 'success');
+                    } catch (error) {
+                        log(`❌ Error initializing Google: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('⏳ Google API not ready, retrying in 1 second...', 'info');
+                    setTimeout(initGoogle, 1000);
+                }
+            };
+            
+            initGoogle();
+        }
+
+        function handleCredentialResponse(response) {
+            log('🎯 Google credential callback triggered!', 'success');
+            
+            if (response.error) {
+                log(`❌ Google Auth Error: ${response.error}`, 'error');
+                document.getElementById('tokenResult').innerHTML = `
+                    <div class="log error">
+                        <strong>❌ Google Auth Failed:</strong><br>
+                        Error: ${response.error}
+                    </div>
+                `;
+                return;
+            }
+            
+            if (!response.credential) {
+                log('❌ No credential received from Google', 'error');
+                return;
+            }
+            
+            log(`🎯 Google credential received! Length: ${response.credential.length}`, 'success');
+            
+            // Test API call to Vercel
+            testApiCallWithRealToken(response.credential);
+        }
+
+        async function testApiCallWithRealToken(token) {
+            log('🔄 Testing API call to Vercel with real Google token...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/google`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({
+                        token: token
+                    })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('tokenResult').innerHTML = `
+                    <div class="log ${response.ok ? 'success' : 'warning'}">
+                        <strong>📡 Real Google Auth Result:</strong><br>
+                        Status: ${response.status}<br>
+                        Response: <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+                log(`📡 Real Google Auth: ${response.status} - ${JSON.stringify(data)}`, response.ok ? 'success' : 'warning');
+            } catch (error) {
+                document.getElementById('tokenResult').innerHTML = `
+                    <div class="log error">
+                        <strong>❌ Real Google Auth Failed:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                log(`❌ Real Google Auth failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run basic tests on load
+        setTimeout(() => {
+            testBackendConnectivity();
+        }, 1000);
+    </script>
+</body>
+</html> 
