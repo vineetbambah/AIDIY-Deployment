@@ -4,7 +4,7 @@ import axios from 'axios';
 // Use local backend for development
 const getApiBaseURL = () => {
   if (process.env.NODE_ENV === 'production') {
-    return process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    return process.env.REACT_APP_API_URL || 'https://aidiy-deployment-production.up.railway.app';
   }
   return 'http://localhost:5000'; // Local Flask server
 };

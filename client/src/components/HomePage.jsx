@@ -50,7 +50,7 @@ const HomePage = () => {
         </div>
       </nav>
 
-      Hero Section
+      {/* Hero Section */}
       <section className={tw('pt-32 pb-20 bg-gradient-to-br from-primary-turquoise to-primary-turquoise-dark overflow-hidden')}>
   <div className={tw('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8')}>
 
