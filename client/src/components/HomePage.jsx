@@ -76,7 +76,7 @@ const HomePage = () => {
     width: '180px',
     height: '59px',
     borderRadius: '10px',
-    background: 'linear-gradient(to right, #2dd4bf,rgb(89, 224, 26))',
+    background: 'linear-gradient(to right, #2dd4bf,rgb(56, 7, 112))',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
