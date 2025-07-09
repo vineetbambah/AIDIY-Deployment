@@ -46,27 +46,6 @@ const KidAssessmentPage = () => {
     });
   };
 
-  const handleComplete = async () => {
-    try {
-      const token = sessionStorage.getItem('app_token');
-      await fetch(`${API_BASE_URL}/api/users/complete-assessment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          assessmentResults: {},
-          completedAt: new Date().toISOString(),
-        }),
-      });
-      
-      navigate('/kid-selection');
-    } catch (error) {
-      console.error('Error completing assessment:', error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
