@@ -1,55 +1,55 @@
-# AIDIY 部署指南
+# AIDIY Deployment Guide
 
-## 🚀 部署架构
+## 🚀 Deployment Architecture
 
-- **前端**: Netlify (静态托管)
-- **后端**: Railway (Python Flask)
-- **数据库**: MongoDB Atlas
-- **域名**: aidiy.ca (Squarespace)
+- **Frontend**: Netlify (Static Hosting)
+- **Backend**: Railway (Python Flask)
+- **Database**: MongoDB Atlas
+- **Domain**: aidiy.ca (Squarespace)
 
-## 📋 部署步骤
+## 📋 Deployment Steps
 
-### 1. MongoDB Atlas 设置
-1. 访问 [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. 创建免费账户
-3. 创建新集群 (选择免费层 M0)
-4. 创建数据库用户
-5. 获取连接字符串
+### 1. MongoDB Atlas Setup
+1. Visit [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free account
+3. Create a new cluster (select free tier M0)
+4. Create a database user
+5. Get the connection string
 
-### 2. Railway 后端部署
-1. 访问 [Railway.app](https://railway.app)
-2. 使用GitHub登录
-3. 选择 "Deploy from GitHub repo"
-4. 选择此仓库
-5. 设置环境变量:
-   - `MONGO_URI`: MongoDB连接字符串
-   - `FLASK_SECRET_KEY`: Flask密钥
-   - `JWT_SECRET`: JWT密钥
-   - `OPENAI_API_KEY`: 你的OpenAI API Key
+### 2. Railway Backend Deployment
+1. Visit [Railway.app](https://railway.app)
+2. Login with GitHub
+3. Select "Deploy from GitHub repo"
+4. Choose this repository
+5. Set environment variables:
+   - `MONGO_URI`: MongoDB connection string
+   - `FLASK_SECRET_KEY`: Flask secret key
+   - `JWT_SECRET`: JWT secret key
+   - `OPENAI_API_KEY`: Your OpenAI API Key
    - `DEV_MODE`: False
-   - `MAIL_USERNAME`: 邮件用户名
-   - `MAIL_PASSWORD`: 邮件密码
+   - `MAIL_USERNAME`: Email username
+   - `MAIL_PASSWORD`: Email password
 
-### 3. Vercel 前端部署
-1. 访问 [Vercel.com](https://vercel.com)
-2. 使用GitHub登录
-3. 导入此仓库
-4. 设置构建设置:
+### 3. Vercel Frontend Deployment
+1. Visit [Vercel.com](https://vercel.com)
+2. Login with GitHub
+3. Import this repository
+4. Set build settings:
    - Framework Preset: Create React App
    - Root Directory: client
-5. 设置环境变量:
-   - `REACT_APP_API_URL`: Railway后端URL
+5. Set environment variables:
+   - `REACT_APP_API_URL`: Railway backend URL
 
-### 4. 域名配置
-1. 在Railway获取后端URL
-2. 在Vercel获取前端URL
-3. 在Squarespace DNS设置中:
-   - 添加CNAME记录: www -> vercel前端URL
-   - 添加A记录: @ -> vercel前端IP
+### 4. Domain Configuration
+1. Get the backend URL from Railway
+2. Get the frontend URL from Vercel
+3. In Squarespace DNS settings:
+   - Add CNAME record: www -> vercel frontend URL
+   - Add A record: @ -> vercel frontend IP
 
-## 🔧 环境变量
+## 🔧 Environment Variables
 
-### 后端 (Railway)
+### Backend (Railway)
 ```
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/aidiy_app
 FLASK_SECRET_KEY=your-secret-key-here
@@ -60,13 +60,13 @@ MAIL_USERNAME=your-email@gmail.com
 MAIL_PASSWORD=your-app-password
 ```
 
-### 前端 (Vercel)
+### Frontend (Vercel)
 ```
 REACT_APP_API_URL=https://your-app.railway.app
 ```
 
-## 🌐 访问地址
+## 🌐 Access URLs
 
-- **生产网站**: https://aidiy.ca
-- **后端API**: https://your-app.railway.app
-- **管理后台**: Vercel/Railway仪表板 
+- **Production Website**: https://aidiy.ca
+- **Backend API**: https://your-app.railway.app
+- **Admin Dashboard**: Vercel/Railway dashboard 

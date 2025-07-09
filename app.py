@@ -29,24 +29,12 @@ DEV_MODE = os.getenv("DEV_MODE", "False") == "True"
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "CHANGE_ME")
 
-# CORS configuration for production and development
+# CORS configuration for production only
 allowed_origins = [
-    "http://localhost:3000",  # Development
-    "http://localhost:8080",  # Debug server
     "https://aidiy.ca",       # Production domain
     "https://www.aidiy.ca",   # Production www subdomain
     "https://aidiy-deployment-production.up.railway.app",  # Railway backend
 ]
-
-# Add Vercel preview URLs in development
-if DEV_MODE:
-    allowed_origins.extend([
-        "https://*.vercel.app",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://localhost:5500",  # Additional debug ports
-        "http://localhost:9000"
-    ])
 
 CORS(
     app,

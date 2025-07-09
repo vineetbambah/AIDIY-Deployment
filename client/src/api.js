@@ -1,16 +1,8 @@
 // src/api.js
 import axios from 'axios';
 
-// Use local backend for development
-const getApiBaseURL = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return process.env.REACT_APP_API_URL || 'https://aidiy-deployment-production.up.railway.app';
-  }
-  return 'http://localhost:5500'; // 修复：Flask服务器运行在5500端口
-};
-
-// Export the base URL for direct fetch calls
-export const API_BASE_URL = getApiBaseURL();
+// Production environment - directly use Railway backend
+const API_BASE_URL = 'https://aidiy-deployment-production.up.railway.app';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -28,4 +20,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Export the base URL for direct fetch calls
+export { API_BASE_URL };
 export default api;

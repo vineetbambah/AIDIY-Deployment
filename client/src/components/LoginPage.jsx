@@ -61,7 +61,7 @@ const LoginPage = () => {
           sessionStorage.setItem('app_token', data.appToken);
           dispatch(loginSuccess({ user: data.user, token: data.appToken }));
           
-          // 检查用户资料是否完整
+          // Check if user profile is complete
           if (data.user.isProfileComplete === false) {
             navigate('/parent-setup');
           } else {
