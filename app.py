@@ -35,6 +35,7 @@ allowed_origins = [
     "http://localhost:8080",  # Debug server
     "https://aidiy.ca",       # Production domain
     "https://www.aidiy.ca",   # Production www subdomain
+    "https://aidiy-deployment-production.up.railway.app",  # Railway backend
 ]
 
 # Add Vercel preview URLs in development

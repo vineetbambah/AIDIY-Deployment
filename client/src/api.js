@@ -6,7 +6,7 @@ const getApiBaseURL = () => {
   if (process.env.NODE_ENV === 'production') {
     return process.env.REACT_APP_API_URL || 'https://aidiy-deployment-production.up.railway.app';
   }
-  return 'http://localhost:5000'; // Local Flask server
+  return 'http://localhost:5500'; // 修复：Flask服务器运行在5500端口
 };
 
 // Export the base URL for direct fetch calls
