@@ -62,7 +62,7 @@ const LoginPage = () => {
           dispatch(loginSuccess({ user: data.user, token: data.appToken }));
           
           // Check if user profile is complete
-          if (data.user.isProfileComplete === false) {
+          if (data.user && data.user.isProfileComplete === false) {
             navigate('/parent-setup');
           } else {
             navigate('/profile');
@@ -95,7 +95,6 @@ const LoginPage = () => {
             window.google.accounts.id.renderButton(div, {
               theme: 'outline',
               size:  'large',
-              width: '100%',
             });
           }
         } catch (e) {
@@ -133,7 +132,7 @@ const LoginPage = () => {
         dispatch(loginSuccess({ user: data.user, token: data.appToken }));
         
         // Check if profile is complete
-        if (data.user.isProfileComplete === false) {
+        if (data.user && data.user.isProfileComplete === false) {
           navigate('/parent-setup');
         } else {
           navigate('/profile');

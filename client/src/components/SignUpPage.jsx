@@ -180,7 +180,6 @@ const SignUpPage = () => {
             window.google.accounts.id.renderButton(div, {
               theme: 'outline',
               size:  'large',
-              width: '100%',
             });
           }
         } catch (err) {
