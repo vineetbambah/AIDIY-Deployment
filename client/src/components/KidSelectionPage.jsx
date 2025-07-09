@@ -10,8 +10,6 @@ const KidSelectionPage = () => {
   const [kids, setKids] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hasCompletedAssessment, setHasCompletedAssessment] = useState(false);
-  const [parentProfile, setParentProfile] = useState(null);
-  const [children, setChildren] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +26,6 @@ const KidSelectionPage = () => {
 
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
-          setParentProfile(profileData.user);
           setHasCompletedAssessment(profileData.user.hasCompletedAssessment || false);
         }
 
@@ -42,8 +39,7 @@ const KidSelectionPage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setChildren(data.children || []);
-          setKids(data.children);
+          setKids(data.children || []);
         }
       } catch (error) {
         console.error('Error fetching data:', error);

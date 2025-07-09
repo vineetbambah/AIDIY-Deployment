@@ -7,7 +7,6 @@ import { API_BASE_URL } from '../api';
 const KidDashboard = () => {
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState(null);
-  const [goals, setGoals] = useState([]);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
   const [goalForm, setGoalForm] = useState({
@@ -84,7 +83,7 @@ const KidDashboard = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            setGoals(data.goals);
+            // setGoals(data.goals); // This line was removed
           }
         }
       } catch (error) {
