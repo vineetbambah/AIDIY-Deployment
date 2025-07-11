@@ -4,14 +4,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../store/authSlice';
 import { tw } from '@twind/core';
-import aidiyLogo from '../images/aidiy_logo.png';
 import { API_BASE_URL } from '../api';
-
 
 /* -------------------- CONFIG -------------------- */
 const GOOGLE_CLIENT_ID =
-  '237672950587-0fjv71akur45kfao2gf7anggc0ft1fit.apps.googleusercontent.com';
-// const API_URL = 'http://localhost:5500';
+  '1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com';
 
 /* ------------------------------------------------ */
 const SignUpPage = () => {
@@ -29,6 +26,7 @@ const SignUpPage = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');      // Google-sign-up message
   const [avatarPreview, setAvatarPreview] = useState(null);
+
 
   /* ------------- client-side validation ------------- */
   const validateForm = () => {
@@ -182,7 +180,6 @@ const SignUpPage = () => {
             window.google.accounts.id.renderButton(div, {
               theme: 'outline',
               size:  'large',
-              width: '100%',
             });
           }
         } catch (err) {
@@ -205,13 +202,9 @@ const SignUpPage = () => {
         )}>
         {/* banner */}
         <div className={tw('bg-gradient-to-r from-sky-100 to-teal-100 p-6')}>
-          <div className="flex justify-center">
-            <img 
-              src={aidiyLogo} 
-              alt="AiDIY" 
-              className="h-20 w-auto"
-            />
-          </div>
+          <h1 className={tw('text-4xl font-bold text-sky-400 text-center')}>
+            AIDIY
+          </h1>
         </div>
 
         <div className={tw('p-8 md:p-12')}>

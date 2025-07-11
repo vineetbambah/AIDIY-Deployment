@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../store/authSlice';
 import { tw } from '@twind/core';
+import { API_BASE_URL } from '../api';
 
 const ParentSetupPage = () => {
   const navigate = useNavigate();
@@ -64,37 +65,34 @@ const ParentSetupPage = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
+    setLoading(true);
     try {
-      const response = await fetch('http://localhost:5500/api/users/profile', {
+      const token = sessionStorage.getItem('app_token');
+      const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('app_token')}`
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phoneNumber: formData.location, // Using location as phone for now
-          avatar: formData.avatar
-        })
+          ...formData,
+          isProfileComplete: true
+        }),
       });
 
       const data = await response.json();
-
       if (data.success) {
-        // Update Redux user state
         dispatch(updateUser({ isProfileComplete: true }));
-        // Navigate to profile page
         navigate('/profile');
       } else {
-        setError(data.error || 'Update failed, please try again');
+        setError(data.error || 'Failed to save profile');
       }
-    } catch (err) {
-      setError('Network error, please try again');
+    } catch {
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -115,6 +113,17 @@ const ParentSetupPage = () => {
         [item]: !formData[category][item]
       }
     });
+  };
+
+  const validateForm = () => {
+    if (currentStep === 1) {
+      if (!formData.firstName || !formData.lastName || !formData.email) {
+        setError('Please fill in all required fields');
+        return false;
+      }
+    }
+    setError('');
+    return true;
   };
 
   return (
@@ -172,7 +181,7 @@ const ParentSetupPage = () => {
               </div>
 
               {/* Avatar Selection */}
-              {/* <div className={tw('flex justify-center mb-8')}>
+              <div className={tw('flex justify-center mb-8')}>
                 <div className={tw('relative')}>
                   <div className={tw('w-32 h-32 rounded-full bg-gradient-to-r from-primary-turquoise to-accent-purple p-1')}>
                     <div className={tw('w-full h-full rounded-full bg-white flex items-center justify-center')}>
@@ -191,7 +200,7 @@ const ParentSetupPage = () => {
                     📷
                   </button>
                 </div>
-              </div> */}
+              </div>
 
               {/* Form Fields */}
               <div className={tw('grid grid-cols-1 md:grid-cols-2 gap-6')}>
@@ -289,7 +298,7 @@ const ParentSetupPage = () => {
               </p>
 
               {/* Your Children */}
-              {/* <div className={tw('bg-blue-50 rounded-xl p-6 mb-6')}>
+              <div className={tw('bg-blue-50 rounded-xl p-6 mb-6')}>
                 <h3 className={tw('flex items-center gap-2 text-lg font-semibold mb-4')}>
                   <span>👶</span> Your Children
                 </h3>
@@ -325,10 +334,10 @@ const ParentSetupPage = () => {
                     />
                   </div>
                 </div>
-              </div> */}
+              </div>
 
               {/* Money Learning Goals */}
-              {/* <div className={tw('bg-green-50 rounded-xl p-6 mb-6')}>
+              <div className={tw('bg-green-50 rounded-xl p-6 mb-6')}>
                 <h3 className={tw('flex items-center gap-2 text-lg font-semibold mb-4')}>
                   <span>🎯</span> Money Learning Goals
                 </h3>
@@ -353,10 +362,10 @@ const ParentSetupPage = () => {
                     </label>
                   ))}
                 </div>
-              </div> */}
+              </div>
 
               {/* Weekly Allowance & Learning Focus */}
-              {/* <div className={tw('grid grid-cols-1 md:grid-cols-2 gap-6 mb-6')}>
+              <div className={tw('grid grid-cols-1 md:grid-cols-2 gap-6 mb-6')}>
                 <div className={tw('bg-yellow-50 rounded-xl p-6')}>
                   <h3 className={tw('flex items-center gap-2 text-lg font-semibold mb-4')}>
                     <span>💰</span> Weekly Allowance
@@ -399,7 +408,7 @@ const ParentSetupPage = () => {
                     ))}
                   </div>
                 </div>
-              </div> */}
+              </div>
 
               {/* Chore Categories */}
               <div className={tw('bg-blue-50 rounded-xl p-6 mb-8')}>

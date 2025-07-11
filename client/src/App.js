@@ -14,6 +14,9 @@ import KidAssessmentPage from './components/KidAssessmentPage';
 import AssessmentQuiz from './components/AssessmentQuiz';
 import ParentDashboard from './components/ParentDashboard';
 import KidDashboard from './components/KidDashboard';
+import ChoreQuest from './components/ChoreQuest';
+import ChatPage from './components/ChatPage';
+import WeeklyProgress from "./components/WeeklyProgress";
 
 function App() {
   return (
@@ -33,6 +36,9 @@ function App() {
             <Route path="/assessment-quiz" element={<AssessmentQuiz />} />
             <Route path="/parent-dashboard" element={<ParentDashboard />} />
             <Route path="/kid-dashboard" element={<KidDashboard />} />
+            <Route path="/chore-quest" element={<ChoreQuest />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/weekly-progress" element={<WeeklyProgress />} />
             <Route path="/features" element={<div>Features Page</div>} />
             <Route path="/about" element={<div>About Us Page</div>} />
             <Route path="/contact" element={<div>Contact Us Page</div>} />

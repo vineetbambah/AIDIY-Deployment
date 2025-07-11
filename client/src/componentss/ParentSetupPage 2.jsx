@@ -32,27 +32,24 @@ const ParentSetupPage = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5500/api/users/profile', {
+      const token = sessionStorage.getItem('app_token');
+      const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('app_token')}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          isProfileComplete: true
+        }),
       });
 
       const data = await response.json();
-
       if (data.success) {
-        // Update Redux user state
-        dispatch(updateUser({ isProfileComplete: true }));
-        // Navigate to profile page
-        navigate('/profile');
-      } else {
-        setError(data.error || 'Update failed, please try again');
+        navigate('/kid-selection');
       }
-    } catch (err) {
-      setError('Network error, please try again');
+    } catch (error) {
+      console.error('Error updating profile:', error);
     } finally {
       setLoading(false);
     }

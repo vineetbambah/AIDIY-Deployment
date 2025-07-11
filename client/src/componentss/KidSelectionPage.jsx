@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BellIcon from './BellIcon';
-import avatarDaughter from '../images/avatar-daughter.png';
-import avatarSon from '../images/avatar-son.png';
 import { API_BASE_URL } from '../api';
-
 
 const KidSelectionPage = () => {
   const navigate = useNavigate();
@@ -15,32 +12,37 @@ const KidSelectionPage = () => {
   const [hasCompletedAssessment, setHasCompletedAssessment] = useState(false);
 
   useEffect(() => {
-    // Fetch user profile and kids
     const fetchData = async () => {
       try {
-        // Fetch user profile to check if they've completed assessment
+        const token = sessionStorage.getItem('app_token');
+        
         const profileResponse = await fetch(`${API_BASE_URL}/api/users/profile`, {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${sessionStorage.getItem('app_token')}`
-          }
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
-        const profileData = await profileResponse.json();
-        if (profileData.success) {
+
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
           setHasCompletedAssessment(profileData.user.hasCompletedAssessment || false);
         }
 
-        // Fetch kids
         const response = await fetch(`${API_BASE_URL}/api/users/children`, {
+          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${sessionStorage.getItem('app_token')}`
-          }
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
-        const data = await response.json();
-        if (data.success) {
-          setKids(data.children);
+
+        if (response.ok) {
+          const data = await response.json();
+          setKids(data.children || []);
         }
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
@@ -50,13 +52,6 @@ const KidSelectionPage = () => {
   }, []);
 
   const handleKidSelect = (kid) => {
-    // Fix avatar display: use proper image if avatar is invalid or emoji
-    const validAvatar = kid.avatar && (
-      kid.avatar.includes('/static/') || 
-      kid.avatar === avatarDaughter || 
-      kid.avatar === avatarSon
-    ) ? kid.avatar : avatarDaughter;
-
     // If user has completed assessment before, go directly to dashboard
     if (hasCompletedAssessment) {
       navigate('/parent-dashboard', { 
@@ -65,7 +60,7 @@ const KidSelectionPage = () => {
           child: {
             id: kid.id,
             name: kid.nickName || kid.firstName,
-            avatar: validAvatar,
+            avatar: kid.avatar || '👧',
             age: kid.age || calculateAge(kid.birthDate)
           }
         } 
@@ -78,7 +73,7 @@ const KidSelectionPage = () => {
           child: {
             id: kid.id,
             name: kid.nickName || kid.firstName,
-            avatar: validAvatar,
+            avatar: kid.avatar || '👧',
             age: kid.age || calculateAge(kid.birthDate)
           }
         } 
@@ -153,21 +148,7 @@ const KidSelectionPage = () => {
                   >
                     <div className="flex justify-center mb-4">
                       <div className="w-24 h-24 bg-accent-pink rounded-full flex items-center justify-center">
-                        {(() => {
-                          const validAvatar = kid.avatar && (
-                            kid.avatar.includes('/static/') || 
-                            kid.avatar === avatarDaughter || 
-                            kid.avatar === avatarSon
-                          ) ? kid.avatar : avatarDaughter;
-                          
-                          return (
-                            <img
-                              src={validAvatar}
-                              alt={`${kid.nickName || kid.firstName} avatar`}
-                              className="w-16 h-16 object-cover rounded-full"
-                            />
-                          );
-                        })()}
+                        <span className="text-5xl">{kid.avatar || '👧'}</span>
                       </div>
                     </div>
                     

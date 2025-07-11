@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { tw } from '@twind/core';
-import aidiyLogo from '../images/aidiy_logo.png';
 import { API_BASE_URL } from '../api';
 
 const ForgotPassword = () => {
@@ -61,7 +60,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      const r = await fetch(`${API_BASE_URL}0/api/auth/send-otp`, {
+      const r = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email }),
@@ -127,13 +126,9 @@ const ForgotPassword = () => {
       >
         {/* banner */}
         <div className={tw('bg-gradient-to-r from-sky-100 to-teal-100 p-6')}>
-          <div className="flex justify-center">
-            <img 
-              src={aidiyLogo} 
-              alt="AiDIY" 
-              className="h-20 w-auto"
-            />
-          </div>
+          <h1 className={tw('text-4xl font-bold text-sky-400 text-center')}>
+            AIDIY
+          </h1>
         </div>
 
         <div className={tw('p-8 md:p-12')}>
@@ -153,7 +148,7 @@ const ForgotPassword = () => {
                 Forgot Password
               </h2>
               <p className={tw('text-gray-600 mb-8')}>
-                Forgot your password? Don’t worry—let us help you reset it.
+                Forgot your password? Don't worry—let us help you reset it.
               </p>
 
               <form
