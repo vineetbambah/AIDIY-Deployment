@@ -34,6 +34,7 @@ allowed_origins = [
     "https://aidiy.ca",       # Production domain
     "https://www.aidiy.ca",   # Production www subdomain
     "https://aidiy-deployment-production.up.railway.app",  # Railway backend
+    "http://localhost:3000",
 ]
 
 CORS(
