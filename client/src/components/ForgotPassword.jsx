@@ -61,7 +61,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      const r = await fetch(`${API_BASE_URL}0/api/auth/send-otp`, {
+      const r = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {//MIGHT HAVE CAUSED THE ERROR
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email }),
