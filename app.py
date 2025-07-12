@@ -235,6 +235,10 @@ def verify_otp():
         otps_col.delete_one({"_id": rec["_id"]})
         return jsonify(error="OTP expired"), 400
     
+    if datetime.now(timezone.utc) > expires_at:
+        otps_col.delete_one({"_id": rec["_id"]})
+        return jsonify(error="OTP expired"), 400
+    
     if rec["attempts"] >= MAX_OTP_ATTEMPTS:
         return jsonify(error="Too many attempts"), 403
     
