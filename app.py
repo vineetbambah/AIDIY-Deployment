@@ -355,7 +355,7 @@ def google_login():
             "lastName": info.get("family_name"),
             "picture": info.get("picture"),
             "login_type": "google",
-            "isVerified": DEV_MODE,  # Auto-verify in dev mode
+            "isVerified": True,  # Auto-verify in dev mode
             "password": None,
             "isProfileComplete": False,
             "hasCompletedAssessment": False,
