@@ -333,16 +333,12 @@ CLIENT_ID = "1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleuserconte
 def google_login():
     tok = (request.get_json() or {}).get("token")
     if not tok:
-        return jsonify(error="No token"), 400
+        return jsonify(success=False, error="No token provided"), 400
     try:
         info = id_token.verify_oauth2_token(tok, google_requests.Request(), CLIENT_ID)
     except Exception as e:
         print(f"[Google Auth Error] {type(e).__name__}: {str(e)}")
-        # Check if it's a network-related error
-        if "network" in str(e).lower() or "connection" in str(e).lower() or "timeout" in str(e).lower():
-            return jsonify(error="Network error: Unable to verify token with Google"), 503
-        else:
-            return jsonify(error=f"Token verification failed: {str(e)}"), 400
+        return jsonify(success=False, error=f"Token verification failed: {str(e)}"), 400
 
     email = info["email"]
     user = users_col.find_one({"email": email})
@@ -361,54 +357,57 @@ def google_login():
             "hasCompletedAssessment": False,
         }
         users_col.insert_one(user)
+    else:
 
-    # Skip OTP verification in dev mode
-    if not user.get("isVerified") and not DEV_MODE:
-        create_or_replace_otp(email, "verify")
-        return (
-            jsonify(success=True, otpRequired=True, message="OTP sent to email"),
-            200,
-        )
+
+      # Skip OTP verification in dev mode
+      if not user.get("isVerified") and not DEV_MODE:
+         users_col.update_one({"email": email}, {"$set": {"isVerified": True}})
+         user["isVerified"] = True
 
     # Check if user profile is complete
     isProfileComplete = user.get("isProfileComplete", False)
-    
-    tok = generate_jwt_token({"email": email, "name": user["name"]})
+    token = generate_jwt_token({"email": email, "name": user["name"]})
+
     return jsonify(
         success=True,
-        user={"email": email, "name": user["name"], "isProfileComplete": isProfileComplete},
-        appToken=tok,
-    )
+        user={
+            "email": email,
+            "name": user["name"],
+            "isProfileComplete": isProfileComplete
+        },
+        appToken=token
+    ), 200
 
-@app.route("/auth/google/verify-otp", methods=["POST"])
-def google_verify_otp():
-    d = request.get_json() or {}
-    email, otp_input = d.get("email"), d.get("otp")
-
-    rec = otps_col.find_one({"email": email, "purpose": "verify"})
-    if not rec:
-        return jsonify(error="Invalid OTP"), 400
-    if datetime.now(timezone.utc) > rec["expires_at"]:
-        return jsonify(error="OTP expired"), 400
-    if rec["attempts"] >= MAX_OTP_ATTEMPTS:
-        return jsonify(error="Too many attempts"), 403
-    if otp_input != rec["otp"]:
-        otps_col.update_one({"email": email}, {"$inc": {"attempts": 1}})
-        return jsonify(error="Incorrect OTP"), 400
-
-    users_col.update_one({"email": email}, {"$set": {"isVerified": True}})
-    otps_col.delete_one({"email": email})
-
-    user = users_col.find_one({"email": email})
-    # Check if user profile is complete
-    isProfileComplete = user.get("isProfileComplete", False)
-    
-    tok = generate_jwt_token({"email": email, "name": user["name"]})
-    return jsonify(
-        success=True,
-        user={"email": email, "name": user["name"], "isProfileComplete": isProfileComplete},
-        appToken=tok,
-    )
+#@app.route("/auth/google/verify-otp", methods=["POST"])
+#def google_verify_otp():
+#    d = request.get_json() or {}
+#    email, otp_input = d.get("email"), d.get("otp")
+#
+#    rec = otps_col.find_one({"email": email, "purpose": "verify"})
+#    if not rec:
+#        return jsonify(error="Invalid OTP"), 400
+#    if datetime.now(timezone.utc) > rec["expires_at"]:
+#        return jsonify(error="OTP expired"), 400
+#    if rec["attempts"] >= MAX_OTP_ATTEMPTS:
+#        return jsonify(error="Too many attempts"), 403
+#    if otp_input != rec["otp"]:
+#        otps_col.update_one({"email": email}, {"$inc": {"attempts": 1}})
+#        return jsonify(error="Incorrect OTP"), 400
+#
+#    users_col.update_one({"email": email}, {"$set": {"isVerified": True}})
+#    otps_col.delete_one({"email": email})
+#
+#    user = users_col.find_one({"email": email})
+#    # Check if user profile is complete
+#    isProfileComplete = user.get("isProfileComplete", False)
+#    
+#    tok = generate_jwt_token({"email": email, "name": user["name"]})
+#    return jsonify(
+#        success=True,
+#        user={"email": email, "name": user["name"], "isProfileComplete": isProfileComplete},
+#        appToken=tok,
+#    )
 
 # ---------- 7  Kid login ---------- #
 @app.route("/api/auth/kid-login", methods=["POST"])
