@@ -32,7 +32,7 @@ const ParentSetupPage = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5500/api/users/profile', {
+      const response = await fetch('https://aidiy-deployment-production.up.railway.app/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
