@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // Production environment - directly use Railway backend
-const API_BASE_URL = 'https://aidiy-deployment-production.up.railway.app';
+const API_BASE_URL = 'https://web-production-a435c.up.railway.app';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -22,7 +22,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'https://aidiy.ca',
+  origin: process.env.CLIENT_URL || 'https://aidiy-deployment-three.vercel.app/',
   credentials: true
 }));
 

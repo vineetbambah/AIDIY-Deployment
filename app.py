@@ -31,9 +31,8 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "CHANGE_ME")
 
 # CORS configuration for production only
 allowed_origins = [
-    "https://aidiy.ca",       # Production domain
-    "https://www.aidiy.ca",   # Production www subdomain
-    "https://aidiy-deployment-production.up.railway.app",  # Railway backend
+    "https://aidiy-deployment-three.vercel.app/",
+    "https://web-production-a435c.up.railway.app/"
     "http://localhost:3000",
 ]
 
