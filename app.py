@@ -148,7 +148,7 @@ def health():
     return jsonify(
         status="OK", 
         time=datetime.now(timezone.utc).isoformat(),
-        ai_available=openai_client is not None
+        ai_available=OpenAI is not None
     )
 
 # ---------- 1  Registration ---------- #
