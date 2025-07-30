@@ -230,7 +230,10 @@ def verify_otp():
     if expires_at.tzinfo is None:
         expires_at = expires_at.replace(tzinfo=timezone.utc)
 
-    if datetime.now(timezone.utc) > rec["expires_at"]:
+    expires_at = rec["expires_at"]
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if datetime.now(timezone.utc) > expires_at:
         otps_col.delete_one({"_id": rec["_id"]})
         return jsonify(error="OTP expired"), 400
     
