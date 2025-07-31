@@ -69,7 +69,7 @@ const ParentSetupPage = () => {
     setError('');
 
     try {
-      const response = await fetch('https://aidiy-deployment-production.up.railway.app/api/users/profile', {
+      const response = await fetch('https://web-production-a435c.up.railway.app/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

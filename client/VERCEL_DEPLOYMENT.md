@@ -22,7 +22,7 @@
    - Visit [vercel.com](https://vercel.com)
    - Import your GitHub repository
    - Set root directory to `client`
-   - Add environment variable: `REACT_APP_API_URL=https://aidiy-deployment-production.up.railway.app`
+   - Add environment variable: `REACT_APP_API_URL=https://web-production-a435c.up.railway.app`
 
 ## Configuration Details
 
@@ -34,7 +34,7 @@
 
 If you need to manually configure environment variables in Vercel Dashboard:
 - Variable name: `REACT_APP_API_URL`
-- Variable value: `https://aidiy-deployment-production.up.railway.app`
+- Variable value: `https://web-production-a435c.up.railway.app`
 
 ## Important Notes
 

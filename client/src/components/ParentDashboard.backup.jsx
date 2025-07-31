@@ -124,7 +124,7 @@ const ParentDashboard = () => {
       }
 
       // Fetch children
-      const childrenRes = await fetch('https://aidiy-deployment-production.up.railway.app/api/users/children', {
+      const childrenRes = await fetch('https://web-production-a435c.up.railway.app/api/users/children', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const childrenData = await childrenRes.json();
@@ -139,7 +139,7 @@ const ParentDashboard = () => {
   const fetchNotifications = async () => {
     try {
       const token = sessionStorage.getItem('app_token');
-      const response = await fetch('https://aidiy-deployment-production.up.railway.app/api/notifications', {
+      const response = await fetch('https://web-production-a435c.up.railway.app/api/notifications', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -155,7 +155,7 @@ const ParentDashboard = () => {
   const handleApproveGoal = async (goalId) => {
     try {
       const token = sessionStorage.getItem('app_token');
-      const response = await fetch(`https://aidiy-deployment-production.up.railway.app/api/goals/${goalId}/approve`, {
+      const response = await fetch(`https://web-production-a435c.up.railway.app/api/goals/${goalId}/approve`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -172,7 +172,7 @@ const ParentDashboard = () => {
   const handleDeclineGoal = async (goalId) => {
     try {
       const token = sessionStorage.getItem('app_token');
-      const response = await fetch(`https://aidiy-deployment-production.up.railway.app/api/goals/${goalId}/decline`, {
+      const response = await fetch(`https://web-production-a435c.up.railway.app/api/goals/${goalId}/decline`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -189,7 +189,7 @@ const ParentDashboard = () => {
   const handleLogout = async () => {
     try {
       const token = sessionStorage.getItem('app_token');
-      await fetch('https://aidiy-deployment-production.up.railway.app/api/auth/logout', {
+      await fetch('https://web-production-a435c.up.railway.app/api/auth/logout', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -205,7 +205,7 @@ const ParentDashboard = () => {
     e.preventDefault();
     try {
       const token = sessionStorage.getItem('app_token');
-      const response = await fetch('https://aidiy-deployment-production.up.railway.app/api/users/profile', {
+      const response = await fetch('https://web-production-a435c.up.railway.app/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ const ParentDashboard = () => {
       const token = sessionStorage.getItem('app_token');
       console.log('Sending audio to server, size:', audioBlob.size, 'type:', audioBlob.type);
       
-      const response = await fetch('https://aidiy-deployment-production.up.railway.app/api/ai/speech-to-text', {
+      const response = await fetch('https://web-production-a435c.up.railway.app/api/ai/speech-to-text', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -376,7 +376,7 @@ const ParentDashboard = () => {
         requestBody.image = selectedImage.split(',')[1];
       }
 
-      const response = await fetch('https://aidiy-deployment-production.up.railway.app/api/ai/chat', {
+      const response = await fetch('https://web-production-a435c.up.railway.app/api/ai/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1280,7 +1280,7 @@ const ParentDashboard = () => {
                   onClick={() => {
                     setShowNotifications(false);
                     // Mark all as read
-                    fetch('https://aidiy-deployment-production.up.railway.app/api/notifications/mark-read', {
+                    fetch('https://web-production-a435c.up.railway.app/api/notifications/mark-read', {
                       method: 'POST',
                       headers: { 'Authorization': `Bearer ${sessionStorage.getItem('app_token')}` }
                     });

@@ -11,7 +11,7 @@ const KidAssessmentPage = () => {
   const handleStartFromScratch = async () => {
     // Mark assessment as complete
     try {
-      await fetch('https://aidiy-deployment-production.up.railway.app/api/users/complete-assessment', {
+      await fetch('https://web-production-a435c.up.railway.app/api/users/complete-assessment', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('app_token')}`,

@@ -78,5 +78,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Frontend URL: ${process.env.CLIENT_URL || 'https://aidiy.ca'}`);
-  console.log(`🔗 API Base URL: ${process.env.API_BASE_URL || 'https://aidiy-deployment-production.up.railway.app'}`);
+  console.log(`🔗 API Base URL: ${process.env.API_BASE_URL || 'https://web-production-a435c.up.railway.app'}`);
 }); 
