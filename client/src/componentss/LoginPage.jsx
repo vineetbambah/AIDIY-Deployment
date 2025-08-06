@@ -12,7 +12,7 @@ import { tw } from '@twind/core';
 import { API_BASE_URL } from '../api';
 
 const GOOGLE_CLIENT_ID =
-  '1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com';
+  '670147633419-rebvnb3b4h848pipit4hv2q1s3u09ln2.apps.googleusercontent.com';
 
 const LoginPage = () => {
   /* ───────────────────────────── local state ───────────────────────────── */
