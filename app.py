@@ -329,7 +329,7 @@ def logout_route():
     return jsonify(success=True)
 
 # ---------- 6  Google sign-in ---------- #
-CLIENT_ID = "1096697062195-l7ip7k3ib9en1gferiklgca206dnpeoj.apps.googleusercontent.com"
+CLIENT_ID = "670147633419-rebvnb3b4h848pipit4hv2q1s3u09ln2.apps.googleusercontent.com"
 
 @app.route("/auth/google", methods=["POST"])
 def google_login():
