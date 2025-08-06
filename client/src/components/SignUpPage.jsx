@@ -10,7 +10,7 @@ import { API_BASE_URL } from '../api';
 
 /* -------------------- CONFIG -------------------- */
 const GOOGLE_CLIENT_ID =
-  '237672950587-0fjv71akur45kfao2gf7anggc0ft1fit.apps.googleusercontent.com';
+  '670147633419-rebvnb3b4h848pipit4hv2q1s3u09ln2.apps.googleusercontent.com';
 // const API_URL = 'http://localhost:5500';
 
 /* ------------------------------------------------ */
