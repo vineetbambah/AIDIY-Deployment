@@ -34,6 +34,8 @@ allowed_origins = [
     "https://aidiy-deployment-three.vercel.app",
     "https://web-production-a435c.up.railway.app",
     "http://localhost:3000",
+    "https://aidiy.ca",
+    "https://www.aidiy.ca"
 ]
 
 CORS(
